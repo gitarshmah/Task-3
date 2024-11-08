@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Tracker</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .task-ongoing { color: red; }
+        .task-completed { color: green; }
+        .sidebar { width: 250px; }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-4 sidebar">
+                <h2>Departments</h2>
+                <ul class="list-group">
+                    {% for department in departments %}
+                        <li class="list-group-item">
+                            {{ department.name }}
+                            <ul class="list-group mt-2">
+                                {% for task in department.tasks.all %}
+                                    <li class="list-group-item {% if task.completed %}task-completed{% else %}task-ongoing{% endif %}">
+                                        <form method="POST" action="" class="d-inline">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="task_id" value="{{ task.id }}">
+                                            <input type="checkbox" name="toggle_task" onchange="this.form.submit();" {% if task.completed %}checked{% endif %}>
+                                            {{ task.name }}
+                                        </form>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                    {% endfor %}
+                </ul>
+                <h3 class="mt-4">Add Department</h3>
+                <form method="POST">
+                    {% csrf_token %}
+                    {{ department_form.as_p }}
+                    <button type="submit" name="add_department" class="btn btn-primary">Add</button>
+                </form>
+
+                <h3 class="mt-4">Add Task</h3>
+                <form method="POST">
+                    {% csrf_token %}
+                    {{ task_form.as_p }}
+                    <button type="submit" name="add_task" class="btn btn-primary">Add</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
