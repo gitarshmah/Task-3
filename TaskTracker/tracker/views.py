@@ -4,6 +4,7 @@ from .forms import DepartmentForm, TaskForm
 
 # Create your views here.
 
+
 def index(request):
     departments = Department.objects.all()
     department_form = DepartmentForm(request.POST or None)
@@ -25,8 +26,21 @@ def index(request):
             task.save()
             return redirect('index')
 
-    return render(request, 'index.html', {
+        elif "delete_department" in request.POST:
+            department_id = request.POST.get("department_id")
+            department = get_object_or_404(Department, id=department_id)
+            department.delete()
+            return redirect('index')
+
+        elif "delete_task" in request.POST:
+            task_id = request.POST.get("task_id")
+            task = get_object_or_404(Task, id=task_id)
+            task.delete()
+            return redirect('index')
+
+    return render(request, 'tracker/index.html', {
         'departments': departments,
         'department_form': department_form,
         'task_form': task_form,
     })
+
